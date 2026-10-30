@@ -144,8 +144,9 @@ $('contentForm').addEventListener('submit', async e => {
     await loadItems();
 
   } catch (error) {
-    status('formStatus', 'خطا: ' + error.message, 'err');
-  }
+  console.error('Upload error:', error);
+  status('formStatus', 'خطا: ' + error.message, 'err');
+}
 });
 $('items').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');const del=e.target.closest('[data-delete]');if(edit){const item=allItems.find(x=>String(x.id)===edit.dataset.edit);if(!item)return;$('itemId').value=item.id;$('type').value=item.content_type;$('title').value=item.title;$('description').value=item.description||'';$('mediaUrl').value=item.media_url||'';$('published').value=String(item.published);window.scrollTo({top:0,behavior:'smooth'})}if(del){const item=allItems.find(x=>String(x.id)===del.dataset.delete);if(!item||!confirm(`حذف «${item.title}»؟ این کار قابل بازگشت نیست.`))return;const {error}=await supabase.from('portfolio_content').delete().eq('id',item.id);if(error){status('listStatus','حذف نشد: '+error.message,'err');return}await loadItems()}});
 $('resetForm').onclick=clearForm;$('refresh').onclick=loadItems;$('logout').onclick=async()=>{if(supabase)await supabase.auth.signOut();currentUser=null;showLogin('از پنل خارج شدی.','ok')};
