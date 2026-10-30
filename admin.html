@@ -85,6 +85,7 @@ $('contentForm').addEventListener('submit', async e => {
   if (!currentUser) return;
 
   const file = $('mediaFile').files[0];
+  console.log('Selected file:', file);
   let mediaUrl = $('mediaUrl').value.trim();
 
   status('formStatus', 'در حال ذخیره محتوا...');
