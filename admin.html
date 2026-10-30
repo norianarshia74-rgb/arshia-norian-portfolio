@@ -80,7 +80,73 @@ function makeCard(item){const img=item.content_type==='image'&&item.media_url?`<
 async function loadItems(){if(!supabase)return;status('listStatus','در حال دریافت محتوا…');let q=supabase.from('portfolio_content').select('*').order('created_at',{ascending:false});if(activeFilter!=='all')q=q.eq('content_type',activeFilter);const {data,error}=await q;if(error){status('listStatus','خطا در دریافت محتوا: '+error.message,'err');return}allItems=data||[];$('items').innerHTML=allItems.length?allItems.map(makeCard).join(''):'<div class="card">هنوز محتوایی ثبت نشده است.</div>';status('listStatus',`تعداد موارد: ${allItems.length}`,'ok')}
 async function checkAdmin(){const {data:{user},error}=await supabase.auth.getUser();if(error||!user){currentUser=null;showLogin('برای ادامه وارد حساب مدیر شو.');return false}const {data,error:adminError}=await supabase.from('portfolio_admins').select('user_id').eq('user_id',user.id).maybeSingle();if(adminError||!data){await supabase.auth.signOut();showLogin('این حساب در فهرست مدیران ثبت نشده یا دسترسی آن تنظیم نشده است.','err');return false}currentUser=user;showApp();status('connectionStatus','اتصال برقرار است؛ واردشده با '+user.email,'ok');await loadItems();return true}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!configured()){status('loginStatus','ابتدا SUPABASE_URL و SUPABASE_PUBLISHABLE_KEY را در کد وارد کن.','err');return}if(!supabase)supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);status('loginStatus','در حال ورود…');const {error}=await supabase.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){status('loginStatus','ورود ناموفق: '+error.message,'err');return}await checkAdmin()});
-$('contentForm').addEventListener('submit',async e=>{e.preventDefault();if(!currentUser)return;const id=$('itemId').value;const payload={content_type:$('type').value,title:$('title').value.trim(),description:$('description').value.trim(),media_url:$('mediaUrl').value.trim(),published:$('published').value==='true',updated_at:new Date().toISOString()};let result=id?await supabase.from('portfolio_content').update(payload).eq('id',id):await supabase.from('portfolio_content').insert(payload);if(result.error){status('formStatus','ذخیره نشد: '+result.error.message,'err');return}status('formStatus','محتوا ذخیره شد.','ok');clearForm();await loadItems()});
+$('contentForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!currentUser) return;
+
+  const file = $('mediaFile').files[0];
+  let mediaUrl = $('mediaUrl').value.trim();
+
+  status('formStatus', 'در حال ذخیره محتوا...');
+
+  try {
+    // بررسی نوع فایل
+    if (file) {
+      const type = $('type').value;
+      const valid =
+        (type === 'image' && file.type.startsWith('image/')) ||
+        (type === 'video' && file.type.startsWith('video/')) ||
+        (type === 'music' && file.type.startsWith('audio/'));
+
+      if (!valid) {
+        status('formStatus', 'نوع فایل با نوع محتوا مطابقت ندارد.', 'err');
+        return;
+      }
+
+      // ساخت مسیر اختصاصی فایل
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const filePath = `${currentUser.id}/${Date.now()}-${safeName}`;
+
+      // آپلود در Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio-media')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // دریافت لینک عمومی
+      const { data } = supabase.storage
+        .from('portfolio-media')
+        .getPublicUrl(filePath);
+
+      mediaUrl = data.publicUrl;
+    }
+
+    const id = $('itemId').value;
+
+    const payload = {
+      content_type: $('type').value,
+      title: $('title').value.trim(),
+      description: $('description').value.trim(),
+      media_url: mediaUrl,
+      published: $('published').value === 'true',
+      updated_at: new Date().toISOString()
+    };
+
+    const result = id
+      ? await supabase.from('portfolio_content').update(payload).eq('id', id)
+      : await supabase.from('portfolio_content').insert(payload);
+
+    if (result.error) throw result.error;
+
+    status('formStatus', 'محتوا با موفقیت ذخیره شد.', 'ok');
+    clearForm();
+    await loadItems();
+
+  } catch (error) {
+    status('formStatus', 'خطا: ' + error.message, 'err');
+  }
+});
 $('items').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');const del=e.target.closest('[data-delete]');if(edit){const item=allItems.find(x=>String(x.id)===edit.dataset.edit);if(!item)return;$('itemId').value=item.id;$('type').value=item.content_type;$('title').value=item.title;$('description').value=item.description||'';$('mediaUrl').value=item.media_url||'';$('published').value=String(item.published);window.scrollTo({top:0,behavior:'smooth'})}if(del){const item=allItems.find(x=>String(x.id)===del.dataset.delete);if(!item||!confirm(`حذف «${item.title}»؟ این کار قابل بازگشت نیست.`))return;const {error}=await supabase.from('portfolio_content').delete().eq('id',item.id);if(error){status('listStatus','حذف نشد: '+error.message,'err');return}await loadItems()}});
 $('resetForm').onclick=clearForm;$('refresh').onclick=loadItems;$('logout').onclick=async()=>{if(supabase)await supabase.auth.signOut();currentUser=null;showLogin('از پنل خارج شدی.','ok')};
 $('filter').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;activeFilter=b.dataset.filter;$('filter').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));loadItems()});
