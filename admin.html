@@ -36,7 +36,10 @@
 <label for="type">نوع محتوا</label><select id="type"><option value="image">تصویر / نمونه‌کار</option><option value="video">ویدیو</option><option value="music">موسیقی</option><option value="article">مقالهٔ مجله</option></select>
 <label for="title">عنوان</label><input id="title" required maxlength="180" placeholder="مثلاً استوری‌بورد شمارهٔ ۱">
 <label for="description">توضیحات</label><textarea id="description" placeholder="توضیح کوتاه دربارهٔ اثر"></textarea>
-<label for="mediaUrl">آدرس فایل یا لینک رسانه</label><input id="mediaUrl" type="url" placeholder="https://..." >
+<label for="mediaUrl">آدرس فایل یا لینک رسانه</label>
+  <input id="mediaUrl" type="url" placeholder="https://..." >
+  <label for="mediaFile">انتخاب فایل از کامپیوتر</label>
+<input id="mediaFile" type="file" accept="image/*,video/*,audio/*">
 <label for="published">وضعیت انتشار</label><select id="published"><option value="false">پیش‌نویس (فقط مدیر)</option><option value="true">منتشرشده</option></select>
 <div class="row"><button type="submit">ذخیره</button><button type="button" id="resetForm" class="secondary">فرم جدید</button></div>
 </form>
