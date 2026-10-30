@@ -107,20 +107,22 @@ $('contentForm').addEventListener('submit', async e => {
       // ساخت مسیر اختصاصی فایل
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const filePath = `${currentUser.id}/${Date.now()}-${safeName}`;
+// آپلود در Supabase Storage
+console.log('Starting upload:', filePath);
 
-      // آپلود در Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        console.log('Starting upload:', filePath);
-        .from('portfolio-media')
-        .upload(filePath, file);
+const { error: uploadError } = await supabase.storage
+  .from('portfolio-media')
+  .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+if (uploadError) throw uploadError;
+
 console.log('Upload successful');
-      // دریافت لینک عمومی
-      const { data } = supabase.storage
-        .from('portfolio-media')
-        .getPublicUrl(filePath);
+// دریافت لینک عمومی
+const { data } = supabase.storage
+  .from('portfolio-media')
+  .getPublicUrl(filePath);
 
+mediaUrl = data.publicUrl;
       mediaUrl = data.publicUrl;
     }
 
