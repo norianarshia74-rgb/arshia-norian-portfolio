@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مدیریت سایت | Arshia Norian</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0a10;--panel:#15121d;--line:#30283b;--text:#f5f0fa;--muted:#aaa0b5;--purple:#a78bfa;--pink:#f0abfc;--red:#ff8b9b;--green:#9de7bd}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#29173a 0,transparent 38%),var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+.wrap{width:min(1080px,calc(100% - 32px));margin:auto;padding:32px 0 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}.brand{font-size:1.1rem;font-weight:bold}.brand span{color:var(--pink)}.badge{font-size:.78rem;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:5px 12px}
+.card{background:#15121deF;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 18px 60px #0003}.narrow{max-width:520px;margin:40px auto}.hidden{display:none!important}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.3}h2{font-size:1.25rem}p,.muted{color:var(--muted)}label{display:block;font-size:.88rem;margin:12px 0 5px}input,textarea,select{width:100%;background:#0e0b13;border:1px solid #40344d;border-radius:10px;color:var(--text);padding:12px;font:inherit}textarea{min-height:100px;resize:vertical}button,.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;padding:11px 16px;background:linear-gradient(120deg,var(--purple),var(--pink));color:#160d20;font:inherit;font-weight:bold;cursor:pointer;text-decoration:none}button.secondary,.btn.secondary{background:#211a2c;color:var(--text);border:1px solid var(--line)}button.danger{background:#4a1e2b;color:#ffdce2;border:1px solid #743044}button:disabled{opacity:.5;cursor:not-allowed}.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.status{margin-top:14px;padding:10px 12px;border-radius:10px;background:#211a2c;color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}.status.ok{color:var(--green)}.status.err{color:var(--red)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{background:#211a2c;color:var(--text);border:1px solid var(--line)}.tabs button.active{background:linear-gradient(120deg,var(--purple),var(--pink));color:#160d20}.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.item{border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}.item h3{margin:0 0 5px}.item .type{color:var(--pink);font-size:.75rem}.item a{color:var(--pink);overflow-wrap:anywhere}.thumb{width:100%;max-height:180px;object-fit:cover;border-radius:9px;margin:10px 0}.small{font-size:.8rem}.danger-note{border-right:3px solid var(--pink);padding-right:12px}.foot{margin-top:26px;font-size:.8rem;color:var(--muted)}@media(max-width:720px){.grid,.items{grid-template-columns:1fr}.card{padding:18px}.wrap{width:min(100% - 22px,1080px);padding-top:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand">ARSHIA <span>NORIAN</span> / ADMIN</div><div class="badge">پنل مدیریت نمونه‌کارها</div></header>
+
+<section id="login" class="card narrow">
+<h1>ورود به پنل</h1>
+<p>با همان ایمیلی وارد شو که در Supabase برای حساب مدیر ساخته‌ای.</p>
+<form id="loginForm">
+<label for="email">ایمیل</label><input id="email" type="email" autocomplete="username" required>
+<label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" required>
+<div class="row"><button type="submit">ورود امن</button></div>
+</form>
+<div id="loginStatus" class="status">برای اتصال، اطلاعات پروژه را در کد این فایل تنظیم کن.</div>
+</section>
+
+<section id="app" class="hidden">
+<div class="toolbar"><div><h1>مدیریت محتوا</h1><p class="muted">محتوا را اضافه کن؛ برای نمایش در سایت، گزینهٔ «منتشرشده» را فعال کن.</p></div><div class="row"><button id="refresh" class="secondary">به‌روزرسانی</button><button id="logout" class="secondary">خروج</button></div></div>
+<div class="grid">
+<section class="card">
+<h2>افزودن / ویرایش محتوا</h2>
+<form id="contentForm">
+<input id="itemId" type="hidden">
+<label for="type">نوع محتوا</label><select id="type"><option value="image">تصویر / نمونه‌کار</option><option value="video">ویدیو</option><option value="music">موسیقی</option><option value="article">مقالهٔ مجله</option></select>
+<label for="title">عنوان</label><input id="title" required maxlength="180" placeholder="مثلاً استوری‌بورد شمارهٔ ۱">
+<label for="description">توضیحات</label><textarea id="description" placeholder="توضیح کوتاه دربارهٔ اثر"></textarea>
+<label for="mediaUrl">آدرس فایل یا لینک رسانه</label>
+  <input id="mediaUrl" type="url" placeholder="https://..." >
+  <label for="mediaFile">انتخاب فایل از کامپیوتر</label>
+<input id="mediaFile" type="file" accept="image/*,video/*,audio/*">
+<label for="bulkMediaFiles">آپلود گروهی تصاویر نمونه‌کار</label>
+<input id="bulkMediaFiles" type="file" accept="image/*" multiple>
+<p class="small muted">تمام تصاویر انتخاب‌شده در Storage بارگذاری و به‌صورت پیش‌نویس ثبت می‌شوند.</p>
+<button type="button" id="bulkUploadBtn" class="secondary">شروع آپلود گروهی</button>
+<label for="published">وضعیت انتشار</label><select id="published"><option value="false">پیش‌نویس (فقط مدیر)</option><option value="true">منتشرشده</option></select>
+<div class="row"><button type="submit">ذخیره</button><button type="button" id="resetForm" class="secondary">فرم جدید</button></div>
+</form>
+<div id="formStatus" class="status">آپلود فایل و ثبت محتوا از طریق Supabase Storage انجام می‌شود.</div>
+</section>
+<section class="card">
+<h2>راهنمای اتصال</h2>
+<p>۱. مقدار <code>SUPABASE_URL</code> و <code>SUPABASE_PUBLISHABLE_KEY</code> را در انتهای این فایل جایگزین کن.</p>
+<p>۲. فایل باید از طریق HTTPS و دامنهٔ سایتت باز شود.</p>
+<p class="danger-note">هرگز کلیدهای <code>secret</code> یا <code>service_role</code> را در این فایل قرار نده. این فایل عمومی است.</p>
+<div id="connectionStatus" class="status">در انتظار اتصال به Supabase</div>
+</section>
+</div>
+<section class="grid" style="margin-top:22px">
+  <div class="card"><h2>نمای کلی</h2><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+    <div class="item"><span class="muted small">کل آثار</span><h2 id="statTotal">۰</h2></div>
+    <div class="item"><span class="muted small">منتشرشده</span><h2 id="statPublished">۰</h2></div>
+    <div class="item"><span class="muted small">پیش‌نویس</span><h2 id="statDrafts">۰</h2></div>
+    <div class="item"><span class="muted small">رسانه‌دار</span><h2 id="statMedia">۰</h2></div>
+  </div></div>
+  <div class="card"><h2>مدیریت سریع</h2><p class="muted small">برای مدیریت امن، حذف گروهی نیازمند تأیید است. پیش از حذف، فهرست انتخاب‌شده را بررسی کن.</p>
+    <label for="searchItems">جست‌وجو در عنوان و توضیحات</label><input id="searchItems" type="search" placeholder="مثلاً استوری‌بورد، انیمیشن…">
+    <div class="row"><button id="selectVisible" class="secondary" type="button">انتخاب موارد نمایش‌داده‌شده</button><button id="clearSelection" class="secondary" type="button">لغو انتخاب</button><button id="bulkDelete" class="danger" type="button">حذف انتخاب‌شده‌ها</button></div>
+  </div>
+</section>
+<div class="toolbar"><div><h2>محتوا</h2><p class="muted">برای ویرایش، روی «ویرایش» بزن.</p></div><div id="filter" class="tabs"><button class="active" data-filter="all">همه</button><button data-filter="image">تصاویر</button><button data-filter="video">ویدیو</button><button data-filter="music">موسیقی</button><button data-filter="article">مقاله‌ها</button></div></div>
+<div id="items" class="items"></div>
+<div id="listStatus" class="status">برای نمایش محتوا، وارد پنل شو.</div>
+
+<section class="card" style="margin-top:24px">
+  <h2>لینک‌های سایت</h2>
+  <p class="muted">این بخش از جدول portfolio_links استفاده می‌کند. لینک‌ها را می‌توان فعال/غیرفعال کرد و ترتیب نمایش را تغییر داد.</p>
+  <form id="linkForm">
+    <input id="linkId" type="hidden">
+    <div class="grid"><div><label for="linkLabel">عنوان لینک</label><input id="linkLabel" maxlength="80" required placeholder="Instagram"></div>
+    <div><label for="linkGroup">گروه</label><select id="linkGroup"><option value="social">شبکه اجتماعی</option><option value="contact">تماس</option><option value="custom">لینک دلخواه</option></select></div></div>
+    <label for="linkUrl">آدرس کامل لینک</label><input id="linkUrl" type="url" required placeholder="https://…">
+    <div class="grid"><div><label for="linkOrder">ترتیب نمایش</label><input id="linkOrder" type="number" value="10" min="0" max="9999"></div>
+    <div><label for="linkEnabled">وضعیت</label><select id="linkEnabled"><option value="true">فعال</option><option value="false">غیرفعال</option></select></div></div>
+    <div class="row"><button type="submit">ذخیره لینک</button><button type="button" id="resetLink" class="secondary">لینک جدید</button></div>
+  </form>
+  <div id="linksList" class="items" style="margin-top:16px"></div><div id="linksStatus" class="status">در انتظار بارگذاری لینک‌ها</div>
+</section>
+
+<section class="card" style="margin-top:24px">
+  <h2>تنظیمات سایت و موسیقی</h2>
+  <p class="muted">موسیقی فقط پس از کلیک بازدیدکننده پخش می‌شود؛ پخش خودکار صدا فعال نیست.</p>
+  <label for="siteTitle">عنوان نمایشی سایت</label><input id="siteTitle" maxlength="120" placeholder="Arshia Norian | Portfolio">
+  <label for="siteMusicFile">فایل موسیقی پس‌زمینه (MP3, OGG یا WAV)</label><input id="siteMusicFile" type="file" accept="audio/mpeg,audio/ogg,audio/wav,audio/*">
+  <label for="siteMusicUrl">یا آدرس فایل موسیقی</label><input id="siteMusicUrl" type="url" placeholder="https://…">
+  <div class="grid"><div><label for="musicEnabled">دکمهٔ موسیقی در سایت</label><select id="musicEnabled"><option value="true">فعال</option><option value="false">غیرفعال</option></select></div>
+  <div><label for="musicVolume">بلندی صدای پیش‌فرض: <span id="volumeValue">25%</span></label><input id="musicVolume" type="range" min="0" max="100" value="25"></div></div>
+  <div class="row"><button id="saveSiteSettings" type="button">ذخیره تنظیمات</button></div>
+  <div id="settingsStatus" class="status">برای ذخیره‌سازی عمومی، SQL راه‌اندازی یک‌باره را اجرا کن.</div>
+</section>
+</section>
+<p class="foot">Arshia Norian · پنل مدیریت شخصی</p>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// جایگزین کن: آدرس اصلی پروژه، بدون /rest/v1/
+const SUPABASE_URL = 'https://ctwxoorgcaevjipkcpfc.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_1nBW72WJIOhdx9p_Bk1NVg_BFjdlwRg';
+
+const $ = id => document.getElementById(id);
+const loginSection = $('login'), appSection = $('app');
+let supabase = null, currentUser = null, allItems = [], activeFilter = 'all';
+function status(id, msg, kind=''){const el=$(id);el.textContent=msg;el.className='status '+kind}
+function configured(){return !SUPABASE_URL.includes('YOUR_PROJECT_ID') && !SUPABASE_PUBLISHABLE_KEY.includes('YOUR_')}
+function showLogin(msg, kind=''){loginSection.classList.remove('hidden');appSection.classList.add('hidden');if(msg)status('loginStatus',msg,kind)}
+function showApp(){loginSection.classList.add('hidden');appSection.classList.remove('hidden')}
+function clearForm(){$('contentForm').reset();$('itemId').value='';$('published').value='false'}
+function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function makeCard(item){const img=item.content_type==='image'&&item.media_url?`<img class="thumb" src="${escapeHtml(item.media_url)}" alt="">`:'';return `<article class="item" data-item-card="${escapeHtml(item.id)}"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" class="item-select" data-select="${escapeHtml(item.id)}" style="width:auto"> انتخاب</label><span class="type">${escapeHtml(item.content_type)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description||'')}</p>${img}${item.media_url?`<a href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener">بازکردن رسانه ↗</a>`:''}<p class="small">وضعیت: ${item.published?'منتشرشده':'پیش‌نویس'}</p><div class="row"><button class="secondary" data-edit="${item.id}">ویرایش</button><button class="danger" data-delete="${item.id}">حذف</button></div></article>`}
+async function loadItems(){if(!supabase)return;status('listStatus','در حال دریافت محتوا…');let q=supabase.from('portfolio_content').select('*').order('created_at',{ascending:false});const {data,error}=await q;if(error){status('listStatus','خطا در دریافت محتوا: '+error.message,'err');return}allItems=data||[];updateStats();renderFilteredItems();status('listStatus',`تعداد موارد: ${allItems.length}`,'ok')}
+function updateStats(){const total=allItems.length,published=allItems.filter(x=>x.published).length,drafts=total-published,media=allItems.filter(x=>x.media_url).length;[['statTotal',total],['statPublished',published],['statDrafts',drafts],['statMedia',media]].forEach(([id,n])=>{const el=$(id);if(el)el.textContent=String(n).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d])})}
+function renderFilteredItems(){const term=($('searchItems')?.value||'').trim().toLocaleLowerCase();const filtered=allItems.filter(x=>(activeFilter==='all'||x.content_type===activeFilter)&&(!term||[x.title,x.description,x.content_type].some(v=>String(v||'').toLocaleLowerCase().includes(term))));$('items').innerHTML=filtered.length?filtered.map(makeCard).join(''):'<div class="card">موردی با این جست‌وجو پیدا نشد.</div>'}
+async function checkAdmin(){const {data:{user},error}=await supabase.auth.getUser();if(error||!user){currentUser=null;showLogin('برای ادامه وارد حساب مدیر شو.');return false}const {data,error:adminError}=await supabase.from('portfolio_admins').select('user_id').eq('user_id',user.id).maybeSingle();if(adminError||!data){await supabase.auth.signOut();showLogin('این حساب در فهرست مدیران ثبت نشده یا دسترسی آن تنظیم نشده است.','err');return false}currentUser=user;showApp();status('connectionStatus','اتصال برقرار است؛ واردشده با '+user.email,'ok');await loadItems();return true}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!configured()){status('loginStatus','ابتدا SUPABASE_URL و SUPABASE_PUBLISHABLE_KEY را در کد وارد کن.','err');return}if(!supabase)supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);status('loginStatus','در حال ورود…');const {error}=await supabase.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){status('loginStatus','ورود ناموفق: '+error.message,'err');return}await checkAdmin()});
+$('contentForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!currentUser) return;
+
+  const file = $('mediaFile').files[0];
+  console.log('Selected file:', file);
+  let mediaUrl = $('mediaUrl').value.trim();
+
+  status('formStatus', 'در حال ذخیره محتوا...');
+
+  try {
+    // بررسی نوع فایل
+    if (file) {
+      const type = $('type').value;
+      const valid =
+        (type === 'image' && file.type.startsWith('image/')) ||
+        (type === 'video' && file.type.startsWith('video/')) ||
+        (type === 'music' && file.type.startsWith('audio/'));
+
+      if (!valid) {
+        status('formStatus', 'نوع فایل با نوع محتوا مطابقت ندارد.', 'err');
+        return;
+      }
+
+      // ساخت مسیر اختصاصی فایل
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const filePath = `${currentUser.id}/${Date.now()}-${safeName}`;
+// آپلود در Supabase Storage
+console.log('Starting upload:', filePath);
+
+const { error: uploadError } = await supabase.storage
+  .from('portfolio-media')
+  .upload(filePath, file);
+
+if (uploadError) throw uploadError;
+
+console.log('Upload successful');
+// دریافت لینک عمومی
+const { data } = supabase.storage
+  .from('portfolio-media')
+  .getPublicUrl(filePath);
+
+mediaUrl = data.publicUrl;
+    }
+
+    const id = $('itemId').value;
+
+    const payload = {
+      content_type: $('type').value,
+      title: $('title').value.trim(),
+      description: $('description').value.trim(),
+      media_url: mediaUrl,
+      published: $('published').value === 'true',
+      updated_at: new Date().toISOString()
+    };
+
+    const result = id
+      ? await supabase.from('portfolio_content').update(payload).eq('id', id)
+      : await supabase.from('portfolio_content').insert(payload);
+
+    if (result.error) throw result.error;
+
+    status('formStatus', 'محتوا با موفقیت ذخیره شد.', 'ok');
+    clearForm();
+    await loadItems();
+
+  } catch (error) {
+  console.error('Upload error:', error);
+  status('formStatus', 'خطا: ' + error.message, 'err');
+}
+});
+$('items').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');const del=e.target.closest('[data-delete]');if(edit){const item=allItems.find(x=>String(x.id)===edit.dataset.edit);if(!item)return;$('itemId').value=item.id;$('type').value=item.content_type;$('title').value=item.title;$('description').value=item.description||'';$('mediaUrl').value=item.media_url||'';$('published').value=String(item.published);window.scrollTo({top:0,behavior:'smooth'})}if(del){const item=allItems.find(x=>String(x.id)===del.dataset.delete);if(!item||!confirm(`حذف «${item.title}»؟ این کار قابل بازگشت نیست.`))return;const {error}=await supabase.from('portfolio_content').delete().eq('id',item.id);if(error){status('listStatus','حذف نشد: '+error.message,'err');return}await loadItems()}});
+$('resetForm').onclick=clearForm;$('refresh').onclick=loadItems;$('logout').onclick=async()=>{if(supabase)await supabase.auth.signOut();currentUser=null;showLogin('از پنل خارج شدی.','ok')};
+$('filter').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;activeFilter=b.dataset.filter;$('filter').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));loadItems()});
+
+// --- Upgrade: searchable content, safe bulk actions, link and site settings ---
+function clearLinkForm(){if(!$('linkForm'))return;$('linkForm').reset();$('linkId').value='';$('linkOrder').value='10';$('linkEnabled').value='true'}
+$('searchItems')?.addEventListener('input',renderFilteredItems);
+$('selectVisible')?.addEventListener('click',()=>document.querySelectorAll('#items .item-select').forEach(x=>x.checked=true));
+$('clearSelection')?.addEventListener('click',()=>document.querySelectorAll('#items .item-select').forEach(x=>x.checked=false));
+$('bulkDelete')?.addEventListener('click',async()=>{if(!currentUser||!supabase)return;const ids=[...document.querySelectorAll('#items .item-select:checked')].map(x=>x.dataset.select);if(!ids.length){status('listStatus','ابتدا حداقل یک مورد را انتخاب کن.','err');return}const names=allItems.filter(x=>ids.includes(String(x.id))).map(x=>x.title).slice(0,5).join('، ');if(!confirm(`تعداد ${ids.length} مورد حذف شود؟\n${names}${ids.length>5?'…':''}\nاین عملیات قابل بازگشت نیست.`))return;status('listStatus','در حال حذف موارد انتخاب‌شده…');const {error}=await supabase.from('portfolio_content').delete().in('id',ids);if(error){status('listStatus','حذف گروهی انجام نشد: '+error.message,'err');return}status('listStatus',`${ids.length} مورد حذف شد.`,'ok');await loadItems()});
+$('linkForm')?.addEventListener('submit',async e=>{e.preventDefault();if(!currentUser||!supabase)return;const id=$('linkId').value;const payload={label:$('linkLabel').value.trim(),group_name:$('linkGroup').value,url:$('linkUrl').value.trim(),sort_order:Number($('linkOrder').value)||0,enabled:$('linkEnabled').value==='true'};if(!/^https?:\/\//i.test(payload.url)){status('linksStatus','آدرس باید با https:// یا http:// شروع شود.','err');return}status('linksStatus','در حال ذخیره لینک…');const res=id?await supabase.from('portfolio_links').update(payload).eq('id',id):await supabase.from('portfolio_links').insert(payload);if(res.error){status('linksStatus','خطا: '+res.error.message+' — مطمئن شو SQL راه‌اندازی اجرا شده است.','err');return}clearLinkForm();await loadLinks()});
+$('resetLink')?.addEventListener('click',clearLinkForm);
+async function loadLinks(){if(!supabase||!currentUser)return;const {data,error}=await supabase.from('portfolio_links').select('*').order('sort_order',{ascending:true});if(error){status('linksStatus','جدول لینک‌ها آماده نیست یا دسترسی وجود ندارد. SQL راه‌اندازی را اجرا کن. ('+error.message+')','err');return}const host=$('linksList');host.replaceChildren();(data||[]).forEach(link=>{const box=document.createElement('article');box.className='item';const title=document.createElement('h3');title.textContent=link.label;const url=document.createElement('p');url.className='small';url.textContent=link.url;const state=document.createElement('p');state.className='small';state.textContent=(link.enabled?'فعال':'غیرفعال')+' · '+(link.group_name||'custom')+' · ترتیب '+link.sort_order;const row=document.createElement('div');row.className='row';const edit=document.createElement('button');edit.className='secondary';edit.textContent='ویرایش';edit.onclick=()=>{$('linkId').value=link.id;$('linkLabel').value=link.label;$('linkGroup').value=link.group_name||'custom';$('linkUrl').value=link.url;$('linkOrder').value=link.sort_order??10;$('linkEnabled').value=String(link.enabled);$('linkLabel').focus()};const toggle=document.createElement('button');toggle.className='secondary';toggle.textContent=link.enabled?'غیرفعال‌کردن':'فعال‌کردن';toggle.onclick=async()=>{const {error}=await supabase.from('portfolio_links').update({enabled:!link.enabled}).eq('id',link.id);if(error)status('linksStatus','خطا: '+error.message,'err');else loadLinks()};const del=document.createElement('button');del.className='danger';del.textContent='حذف';del.onclick=async()=>{if(!confirm('این لینک حذف شود؟'))return;const {error}=await supabase.from('portfolio_links').delete().eq('id',link.id);if(error)status('linksStatus','خطا: '+error.message,'err');else loadLinks()};row.append(edit,toggle,del);box.append(title,url,state,row);host.append(box)});status('linksStatus',`تعداد لینک‌ها: ${(data||[]).length}`,'ok')}
+$('musicVolume')?.addEventListener('input',e=>{$('volumeValue').textContent=e.target.value+'%'});
+async function loadSiteSettings(){if(!supabase||!currentUser)return;const {data,error}=await supabase.from('portfolio_settings').select('id,settings').eq('id',1).maybeSingle();if(error){status('settingsStatus','جدول تنظیمات آماده نیست. SQL راه‌اندازی را اجرا کن. ('+error.message+')','err');return}const v=data?.settings||{};$('siteTitle').value=v.site_title||'Arshia Norian | Portfolio';$('siteMusicUrl').value=v.music_url||'';$('musicEnabled').value=String(v.music_enabled!==false);$('musicVolume').value=Number.isFinite(Number(v.music_volume))?Math.round(Number(v.music_volume)*100):25;$('volumeValue').textContent=$('musicVolume').value+'%';status('settingsStatus','تنظیمات بارگذاری شد.','ok')}
+$('saveSiteSettings')?.addEventListener('click',async()=>{if(!supabase||!currentUser)return;status('settingsStatus','در حال ذخیره تنظیمات…');let musicUrl=$('siteMusicUrl').value.trim();const file=$('siteMusicFile').files[0];try{if(file){if(!file.type.startsWith('audio/'))throw new Error('فایل انتخاب‌شده صوتی نیست.');if(file.size>50*1024*1024)throw new Error('حجم موسیقی باید کمتر از ۵۰ مگابایت باشد.');const path=`${currentUser.id}/site-music-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;const {error:upErr}=await supabase.storage.from('portfolio-media').upload(path,file);if(upErr)throw upErr;musicUrl=supabase.storage.from('portfolio-media').getPublicUrl(path).data.publicUrl;$('siteMusicUrl').value=musicUrl}const settings={site_title:$('siteTitle').value.trim(),music_url:musicUrl,music_enabled:$('musicEnabled').value==='true',music_volume:(Number($('musicVolume').value)||0)/100};const {error}=await supabase.from('portfolio_settings').upsert({id:1,settings,updated_at:new Date().toISOString()});if(error)throw error;$('siteMusicFile').value='';status('settingsStatus','تنظیمات ذخیره شد. برای دیدن تغییرات، سایت را تازه‌سازی کن.','ok')}catch(err){status('settingsStatus','خطا: '+err.message,'err')}});
+const originalCheckAdmin=checkAdmin;
+checkAdmin=async function(){const ok=await originalCheckAdmin();if(ok){await Promise.all([loadLinks(),loadSiteSettings()])}return ok};
+
+if(configured()){supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);status('loginStatus','اتصال تنظیم شده؛ با ایمیل و رمز مدیر وارد شو.','ok')}else{status('loginStatus','ابتدا دو مقدار اتصال را در کد فایل جایگزین کن.')}
+</script>
+</body>
+</html>
